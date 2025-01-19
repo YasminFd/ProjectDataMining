@@ -20,6 +20,7 @@
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
     <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link href="css/demo.css" rel="stylesheet">
 
 </head>
 
@@ -161,7 +162,23 @@
                     <div class="row">
 
                         <!-- Area Chart -->
-                        <div class="col-xl-8 col-lg-7">
+                        <div class="col-xl-4 col-lg-7">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div
+                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">Public Sentiment</h6>
+                                    
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <div class="chart-area">
+                                        <div id="tester" ></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-lg-7">
                             <div class="card shadow mb-4">
                                 <!-- Card Header - Dropdown -->
                                 <div
@@ -190,7 +207,7 @@
                         </div>
 
                         <!-- Pie Chart -->
-                        <div class="col-xl-4 col-lg-5">
+                        <div class="col-xl-4 col-lg-7">
                             <div class="card shadow mb-4">
                                 <!-- Card Header - Dropdown -->
                                 <div
@@ -276,15 +293,22 @@
                             </div>
                         </div>
 
-                        <div class="col-lg-6 mb-4">
-
-                            <!-- Illustrations -->
+                        <div class="col-xl-6 col-lg-8 mb-4">
                             <div class="card shadow mb-3">
                                 <div class="card-header py-3">
                                     <h6 class="m-0 font-weight-bold text-primary">Top Hashtags</h6>
                                 </div>
                                 <div class="card-body mt-3">
-                                    <!-- Color System -->
+                            <div id="words_container"></div>
+                        </div>
+                    </div>
+                </div>
+                            <!-- 
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Top Hashtags</h6>
+                                </div>
+                                <div class="card-body mt-3">
+                                    
                             <div class="row">
                                 <div class="col-lg-6 mb-2">
                                     <div class="card bg-primary text-white shadow">
@@ -352,7 +376,7 @@
                                 </div>
                             </div>
                                 </div>
-                            </div>
+                            </div> -->
 
                         </div>
                     </div>
@@ -896,9 +920,14 @@
         <!-- Page level plugins -->
         <script src="vendor/datatables/jquery.dataTables.min.js"></script>
         <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+        <script src="https://cdn.anychart.com/releases/v8/js/anychart-base.min.js"></script>
+  <script src="https://cdn.anychart.com/releases/v8/js/anychart-tag-cloud.min.js"></script>
     
         <!-- Page level custom scripts -->
         <script src="js/demo/datatables-demo.js"></script>
+        <script src="js/plotly/plotly-2.35.2.min.js"></script>
+        <script src="js/demo/bubble-chart-demo.js"></script>
+        <script src="js/demo/word-cloud-demo.js"></script>
 
 </body>
 
