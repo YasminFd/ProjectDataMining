@@ -35,7 +35,7 @@ footer {
 }
 /* Reduce Font Size */
 #dataTable {
-    font-size: 15px; /* Adjust as needed */
+    font-size: 10px; /* Adjust as needed */
 }
 
 /* Reduce Padding */
@@ -50,4 +50,17 @@ footer {
 .dataTables_wrapper .dataTables_paginate .page-link {
     font-size: 15px;
     padding: 2px 4px;
+}
+
+.chart-bar {
+    width: 100%;  /* Make the div responsive */
+    max-width: 800px;  /* Set a max width to prevent overflow */
+    height: 400px;  /* Adjust the height to fit */
+    overflow: hidden;  /* Prevent chart from overflowing */
+}
+
+.chart-bar canvas {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
 }

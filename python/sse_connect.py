@@ -13,7 +13,7 @@ print("Initializing FastAPI app endpoints imported...")
 def sse():
     def event_stream():
         while True:
-            time.sleep(3)  # Simulate live updates
+            time.sleep(10)  # Simulate live updates
             yield f"data: Server time is {time.ctime()}\n\n"
 
     return StreamingResponse(event_stream(), media_type="text/event-stream")

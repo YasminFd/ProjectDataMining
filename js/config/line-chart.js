@@ -107,3 +107,4 @@ function setupChart() {
         })
         .catch(error => console.error("Error fetching initial data:", error));
 }
+setupChart()

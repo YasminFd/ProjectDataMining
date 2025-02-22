@@ -3,6 +3,9 @@ from pydantic import BaseModel
 import random
 from random import randint
 from datetime import datetime
+import json
+import re
+from fastapi.responses import JSONResponse
 print("Initializing endpoints...")
 
 
@@ -18,22 +21,9 @@ async def get_pie_chart_data():
     labels = ["Positive", "Neutral", "Negative"]
     return {"labels": labels, "data": data} 
 
-
-@app.get("/api/bar-chart-data")
-async def get_bar_chart_data():
-    # Generate random data for the chart (6 months for example)
-    months = ["January", "February", "March", "April", "May", "June"]
-    revenue = [randint(3000, 15000) for _ in range(6)]  # Random revenue for 6 months
-
-    return JSONResponse(content={"labels": months, "data": revenue})
-
-@app.get("/api/bubble-chart-data")
-async def get_chart_data():
-    return {
-        "x": [1, 2, 3, 4],
-        "y": [random.randint(5, 20) for _ in range(4)],  # Random Y values
-        "size": [random.randint(20, 100) for _ in range(4)]  # Random marker sizes
-    }
+def calculate_virality(likes: int, retweets: int, comments: int) -> float:
+    # Example formula to calculate virality based on likes, retweets, and comments
+    return likes + (retweets * 2) + (comments * 1.5)
 
 
 # Endpoint to get initial chart data
@@ -62,32 +52,30 @@ async def get_heatmap_data():
 
     return {"x": x, "y": y, "z": z}
 
-language_data = [
-    {"x": "Mandarin Chinese", "value": 1090000000, "category": "Sino-Tibetan"},
-    {"x": "English", "value": 983000000, "category": "Indo-European"},
-    {"x": "Hindustani", "value": 544000000, "category": "Indo-European"},
-    {"x": "Spanish", "value": 527000000, "category": "Indo-European"},
-    {"x": "Arabic", "value": 422000000, "category": "Afro-Asiatic"},
-    {"x": "Malay", "value": 281000000, "category": "Austronesian"},
-    {"x": "Russian", "value": 267000000, "category": "Indo-European"},
-    {"x": "Bengali", "value": 261000000, "category": "Indo-European"},
-    {"x": "Portuguese", "value": 229000000, "category": "Indo-European"},
-    {"x": "French", "value": 229000000, "category": "Indo-European"},
-    {"x": "Hausa", "value": 150000000, "category": "Afro-Asiatic"},
-    {"x": "Punjabi", "value": 148000000, "category": "Indo-European"},
-    {"x": "Japanese", "value": 129000000, "category": "Japonic"},
-    {"x": "German", "value": 129000000, "category": "Indo-European"},
-    {"x": "Persian", "value": 121000000, "category": "Indo-European"}
-]
+
+def load_word_data():
+    with open(r'C:\Users\Yasmin\Desktop\Yasmin\ProjectDataMining\js\word_frequencies.json', 'r', encoding='utf-8') as file:
+        return json.load(file)
+    
+def detect_script(text):
+    # Regular expressions for Arabic and English
+    arabic_pattern = re.compile(r'[\u0600-\u06FF]')
+    english_pattern = re.compile(r'[A-Za-z]')
+
+    if arabic_pattern.search(text):
+        return "Arabic"
+    elif english_pattern.search(text):
+        return "English"
+    
+    return "Unknown"
 
 # Endpoint to get language data with randomized frequencies
 @app.get("/api/language-data")
-async def get_language_data():
-    # Randomize the population (value) for each language
-    for lang in language_data:
-        lang["value"] = random.randint(100000000, 1200000000)  # Randomize the frequency in range
-    return {"data": language_data}
-
+async def get_word_data():
+    word_data = load_word_data()  # Load data from JSON file
+    for word_item in word_data:
+        word_item["category"] = detect_script(word_item["word"])
+    return {"data": word_data}
 
 
 class ProgressData(BaseModel):
@@ -176,3 +164,86 @@ async def get_social_media_data():
         total_comments=random.randint(1000, 100000),
         total_shares=random.randint(5000, 500000)
     )
+
+def load_engagement_data():
+    with open(r'C:\Users\Yasmin\Desktop\Yasmin\ProjectDataMining\js\tweets_engagement.json', 'r', encoding='utf-8') as file:
+        return json.load(file)
+
+
+eng = load_engagement_data()
+print(eng)
+@app.get("/api/bar-chart-data")
+async def get_bar_chart_data():
+    labels = [f"{post['date']} {post['time']}" for post in eng["top_comments"]]
+    likes = [post["likes"] for post in eng["top_comments"]]
+    retweets = [post["retweets"] for post in eng["top_comments"]]
+    comments = [post["comments"] for post in eng["top_comments"]]
+    contents = [post["content"] for post in eng["top_comments"]]  # Include content for tooltips
+
+    return {
+        "labels": labels,
+        "datasets": [
+            {"label": "Likes", "backgroundColor": "#4e73df", "data": likes, "content": contents},
+            {"label": "Retweets", "backgroundColor": "#1cc88a", "data": retweets, "content": contents},
+            {"label": "Comments", "backgroundColor": "#e74a3b", "data": comments, "content": contents},
+        ]
+    }
+
+@app.get("/api/bar-chart-data-likes")
+async def get_bar_chart_data_likes():
+    labels = [f"{post['date']} {post['time']}" for post in eng["top_likes"]]
+    likes = [post["likes"] for post in eng["top_likes"]]
+    retweets = [post["retweets"] for post in eng["top_likes"]]
+    comments = [post["comments"] for post in eng["top_likes"]]
+    contents = [post["content"] for post in eng["top_likes"]]
+
+    return {
+        "labels": labels,
+        "datasets": [
+            {"label": "Likes", "backgroundColor": "#4e73df", "data": likes, "content": contents},
+            {"label": "Retweets", "backgroundColor": "#1cc88a", "data": retweets, "content": contents},
+            {"label": "Comments", "backgroundColor": "#e74a3b", "data": comments, "content": contents},
+        ]
+    }
+
+
+from datetime import datetime
+def to_unix_timestamp(date_str):
+    return int(datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S").timestamp())  # Convert to UNIX timestamp
+
+@app.get("/api/bubble-chart-data")
+async def get_bubble_chart_data():
+    x_data = []
+    y_data = []
+    size_data = []
+    text_data = []
+
+    for item in eng["top_likes"]:
+        try:
+            date_str = f"{item['date']} {item['time']}"
+
+            # Virality calculation
+            virality = calculate_virality(item['likes'], item['retweets'], item['comments'])
+
+            if virality > 0:
+                scaled_virality = virality * 0.1
+                scaled_size = (item['likes'] + item['retweets'] + item['comments']) * 0.1
+
+                x_data.append(to_unix_timestamp(date_str))  # Store adjusted timestamp
+                y_data.append(scaled_virality)
+                size_data.append(scaled_size)
+                text_data.append(item['content'])
+
+                print(f"Processed: {date_str} -> {to_unix_timestamp(date_str)}")  # Debugging output
+
+        except Exception as e:
+            print(f"Error processing item {item['id']}: {e}")
+
+    return JSONResponse(content={
+        'x': x_data,
+        'y': y_data,
+        'size': size_data,
+        'text': text_data
+    })
+
+

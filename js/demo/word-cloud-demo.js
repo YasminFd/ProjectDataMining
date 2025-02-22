@@ -7,11 +7,11 @@ async function updateWordCloud() {
 
       // Process the fetched data into the format required by AnyChart
       const chartData = data.data.map(item => ({
-          x: item.x,           // Language name
-          value: item.value,   // Population count
+          x: item.word,           // Language name
+          value: item.count,   // Population count
           category: item.category // Language family
       }));
-
+      
       // Check if there's an existing chart and dispose it before creating a new one
       if (window.chart) {
           window.chart.dispose();  // Dispose the previous chart to avoid duplication
@@ -25,6 +25,8 @@ async function updateWordCloud() {
 
       // Enable a color range
       window.chart.colorRange(true);
+
+      window.chart.palette(['blue', 'red']);
 
       // Set the color range length
       window.chart.colorRange().length('90%');

@@ -27,3 +27,4 @@ function setupChart() {
         Plotly.newPlot("chart-area-tester", [trace1], chartLayout);
     });
 }
+setupChart()
