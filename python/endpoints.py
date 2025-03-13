@@ -227,7 +227,7 @@ async def get_bubble_chart_data():
 
             if virality > 0:
                 scaled_virality = virality * 0.1
-                scaled_size = (item['likes'] + item['retweets'] + item['comments']) * 0.1
+                scaled_size = (item['likes'] + item['retweets'] + item['comments']) * 0.25
 
                 x_data.append(to_unix_timestamp(date_str))  # Store adjusted timestamp
                 y_data.append(scaled_virality)
